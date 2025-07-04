@@ -13,7 +13,7 @@ This repository provides the official implementation of the paper:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-repo/adadpigu.git
+   git clone https://github.com/FangXieLab/AdaDPIGU.git
    cd adadpigu
 2. **Install dependencies:**
     ```bash

@@ -9,7 +9,7 @@ This repository provides the official implementation of the paper:
 
 **Requirements:**  
 - Python 3.8 or above  
-- Linux system (tested), CUDA 11.0 recommended
+- Linux system, CUDA 11.0 recommended
 
 1. **Clone the repository:**
    ```bash

@@ -60,7 +60,7 @@ def SparseAdaCliP(model, batch_x, batch_y, loss_fn,
 
     # === [5] Add Gaussian noise (to the mean) for DP ===
     clipped_mean = centered_grad.mean(dim=0)
-    sigma = noise_multipler*clip_norm/B
+    sigma = noise_multiplier*clip_norm/B
     noisy_mean = clipped_mean + torch.randn_like(clipped_mean)*sigma
     #noise = torch.randn_like(centered_grad) * (noise_multiplier * clip_norm)
     #noisy_grad = centered_grad + noise / B

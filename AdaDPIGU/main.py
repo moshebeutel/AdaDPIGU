@@ -12,7 +12,7 @@ import numpy as np
 import torchvision
 
 from models.get_model import get_model
-from utils import get_data_loader, get_sigma, checkpoint, adjust_learning_rate, process_grad_batch
+from utils import get_data_loader, get_sigma
 from adaclip import SparseAdaCliP, update_m_s
 
 from rdp_accountant import compute_rdp, get_privacy_spent
@@ -35,7 +35,7 @@ parser.add_argument('--n_epoch', default=500, type=int, help='total number of ep
 parser.add_argument('--lr', default=0.1, type=float, help='base learning rate (default=0.1)')
 parser.add_argument('--momentum', default=0.9, type=float, help='value of momentum')
 
-parser.add_argument('--private', '-p', action='store_true', help='enable differential privacy')
+parser.add_argument('--private', action='store_true', help='enable differential privacy')
 parser.add_argument('--clip', default=5., type=float, help='gradient clipping bound')
 parser.add_argument('--eps', default=4., type=float, help='privacy parameter epsilon')
 parser.add_argument('--delta', default=1e-5, type=float, help='desired delta')
@@ -53,19 +53,19 @@ def initialize_results_file(results_file, base_pruning_rate):
         writer.writerow([f'Base Pruning Rate: {base_pruning_rate}'])
         writer.writerow(['Phase', 'Epoch', 'Train Loss', 'Train Accuracy', 'Test Loss', 'Test Accuracy', 'Epsilon Spent', 'Sigma'])
 
-def initialize_results_file(results_file, fieldnames, base_pruning_rate=None):
-    """
-    Initialize the results CSV file.
-    Optionally writes an experiment description/parameter line as a comment at the top.
-    Always writes fieldnames as the first line (for pandas compatibility).
-    """
-    if os.path.exists(results_file):
-        print(f"Warning: {results_file} already exists and will be overwritten.")
-    with open(results_file, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        if base_pruning_rate is not None:
-            writer.writerow([f'# Base Pruning Rate: {base_pruning_rate}'])
-        writer.writerow(fieldnames)
+# def initialize_results_file(results_file, fieldnames, base_pruning_rate=None):
+#     """
+#     Initialize the results CSV file.
+#     Optionally writes an experiment description/parameter line as a comment at the top.
+#     Always writes fieldnames as the first line (for pandas compatibility).
+#     """
+#     if os.path.exists(results_file):
+#         print(f"Warning: {results_file} already exists and will be overwritten.")
+#     with open(results_file, mode='w', newline='') as file:
+#         writer = csv.writer(file)
+#         if base_pruning_rate is not None:
+#             writer.writerow([f'# Base Pruning Rate: {base_pruning_rate}'])
+#         writer.writerow(fieldnames)
 
 
 def log_results(results_file, phase, epoch, train_loss, train_acc, test_loss, test_acc, eps_spent=None, sigma=None):
@@ -81,17 +81,17 @@ def log_results(results_file, phase, epoch, train_loss, train_acc, test_loss, te
         else:
             writer.writerow([phase, epoch, train_loss, train_acc, test_loss, test_acc])
 
-def log_results(results_file, result_dict, fieldnames):
+# def log_results(results_file, result_dict, fieldnames):
 
-    row = []
-    for k in fieldnames:
-        v = result_dict.get(k, '')
-        if isinstance(v, torch.Tensor):
-            v = v.item()
-        row.append(v)
-    with open(results_file, mode='a', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(row)
+#     row = []
+#     for k in fieldnames:
+#         v = result_dict.get(k, '')
+#         if isinstance(v, torch.Tensor):
+#             v = v.item()
+#         row.append(v)
+#     with open(results_file, mode='a', newline='') as file:
+#         writer = csv.writer(file)
+#         writer.writerow(row)
 
 
 use_cuda = torch.cuda.is_available()
@@ -191,24 +191,24 @@ def initialize_model(args):
 
 
     return net, initial_state_dict, optimizer, loss_func
-def initialize_model(args, device):
+# def initialize_model(args, device):
 
-    net = initialize_net(args, device=device)
-    initial_state_dict = {name: param.clone() for name, param in net.named_parameters()}
+#     net = initialize_net(args, device=device)
+#     initial_state_dict = {name: param.clone() for name, param in net.named_parameters()}
 
-    optimizer = optim.SGD(
-        net.parameters(),
-        lr=args.lr,
-        momentum=args.momentum,
-        weight_decay=args.weight_decay
-    )
+#     optimizer = optim.SGD(
+#         net.parameters(),
+#         lr=args.lr,
+#         momentum=args.momentum,
+#         weight_decay=args.weight_decay
+#     )
 
 
-    reduction_mode = 'sum' if args.private else 'mean'
-    loss_func = nn.CrossEntropyLoss(reduction=reduction_mode)
-    loss_func = extend(loss_func)
+    # reduction_mode = 'sum' if args.private else 'mean'
+    # loss_func = nn.CrossEntropyLoss(reduction=reduction_mode)
+    # loss_func = extend(loss_func)
 
-    return net, optimizer, loss_func, initial_state_dict
+    # return net, optimizer, loss_func, initial_state_dict
 
 def get_epsilon(sampling_rate, steps, noise_multiplier, delta):
     orders = np.arange(1.1, 64.0, 0.1)
@@ -890,7 +890,7 @@ def test(epoch, net, testloader, loss_func, use_cuda, best_acc, args, mask=None)
     if acc > best_acc:
         print(f" New best model saved at epoch {epoch}: Test Acc = {acc:.2f}% (previous best {best_acc:.2f}%)")
         best_acc = acc
-        checkpoint(net, acc, epoch, args.sess)
+        # checkpoint(net, acc, epoch, args.sess)
 
     return test_loss / (batch_idx + 1), acc, best_acc
 
